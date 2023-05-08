@@ -1,0 +1,20 @@
+display
+new akk6 twinge
+display
+remove akk6
+display
+new akk6 hello
+new baa2 find
+new baa5 out
+new akk72 hello
+new baa23 find
+new baa55 out
+display
+verify baa5 out
+verify baa5 in
+home baa2 /tmp/later
+display
+passwd baa5 goodbye
+verify baa5 goodbye
+verify baa5 bad
+display

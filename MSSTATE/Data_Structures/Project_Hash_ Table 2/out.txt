@@ -1,0 +1,23 @@
+M	baa5	goodbye	/users/baa5	
+
+N	akk72	hello	/users/akk72	
+N	baa23	find	/users/baa23	
+
+
+
+N	baa55	out	/users/baa55	
+
+
+
+
+
+
+
+
+
+
+
+
+N	akk6	hello	/users/akk6	
+M	baa2	find	/tmp/later	
+
