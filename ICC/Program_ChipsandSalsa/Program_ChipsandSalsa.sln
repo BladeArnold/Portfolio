@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.452
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Program_ChipsandSalsa", "Program_ChipsandSalsa\Program_ChipsandSalsa.vcxproj", "{121739F9-5253-4AF8-A094-D0467DA8C01D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{121739F9-5253-4AF8-A094-D0467DA8C01D}.Debug|x64.ActiveCfg = Debug|x64
+		{121739F9-5253-4AF8-A094-D0467DA8C01D}.Debug|x64.Build.0 = Debug|x64
+		{121739F9-5253-4AF8-A094-D0467DA8C01D}.Debug|x86.ActiveCfg = Debug|Win32
+		{121739F9-5253-4AF8-A094-D0467DA8C01D}.Debug|x86.Build.0 = Debug|Win32
+		{121739F9-5253-4AF8-A094-D0467DA8C01D}.Release|x64.ActiveCfg = Release|x64
+		{121739F9-5253-4AF8-A094-D0467DA8C01D}.Release|x64.Build.0 = Release|x64
+		{121739F9-5253-4AF8-A094-D0467DA8C01D}.Release|x86.ActiveCfg = Release|Win32
+		{121739F9-5253-4AF8-A094-D0467DA8C01D}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0A900698-771D-43E3-90FA-6DBB4D1C218C}
+	EndGlobalSection
+EndGlobal
