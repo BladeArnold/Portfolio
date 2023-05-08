@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<div style="text-align:center">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculate BMI</title>
+</head>
+<body>
+    <h1>Calculate Your BMI</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label style="color: teal;font-weight: 500;"
+        for="ft" >Feet</label> &nbsp;
+        <input type="number" name="ft" id="ft" required>
+        <label style="color: teal;font-weight: 500;"
+        for="inches" >Inches</label> &nbsp;
+        <input type="number" name="inches" id="inches" required>
+        <br>
+        <br>
+        <label style="color: teal;font-weight: 500;"
+        for="weight" >Weight (lbs):</label> &nbsp;
+        <input type="number" name="weight" id="weight" required>
+        <br>
+        <br>
+        <button style="background-color: rgb(144, 216, 248);" type="submit">Calculate BMI</button>
+    </form>
+</body>
+<div>
+</html>
+
+
