@@ -1,0 +1,194 @@
+#include <sys/types.h>
+
+#include <sys/stat.h>
+
+#include <string.h>
+
+#include <stdio.h>
+
+#include <stdlib.h>
+
+#include <unistd.h>
+
+#include <fcntl.h>
+
+
+
+
+
+#define BUF_SIZE 1024
+
+
+
+
+
+
+
+int main (int arcg, char *argv[])
+
+{
+
+  int alertcount = 0; // alerts 
+
+  int input; // input file
+
+  int output; // output file
+
+  mode_t perms = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP;
+
+  char low[] = "\nWarning! The pressure is low.\n";
+
+  char high[] = "\nWarning! The pressure is high.\n";
+
+  int fd;
+
+  char *c = (char *) calloc(100, sizeof(char));
+
+  char buf [BUF_SIZE];
+
+  ssize_t numread;
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  input = open("flowData.dat",O_RDONLY | O_CREAT | O_TRUNC, perms);   // opens the input
+
+  output = open("outflowdata.dat", O_WRONLY | O_CREAT | O_TRUNC, perms); //
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  if (input == -1)
+
+    {
+
+      perror("open for read");
+
+      exit (EXIT_FAILURE);
+
+    }
+
+
+
+  if (output == -1)
+
+    {
+
+      perror("open for write");
+
+      exit (EXIT_FAILURE);
+
+    }
+
+
+
+
+
+
+
+  do     
+
+      {
+
+	numread = read(input, c, 4); // reads the file for input
+
+
+
+	
+
+	if(c < 950 || c > 1050) // does the count for error and last time shown
+
+	    {
+
+	      printf("\nData entries since last error: %d", alertcount);
+
+	      write(alertcount, buf, output);
+
+	      printf("\n %s", c);
+
+	      alertcount = 0;
+
+	    }
+
+
+
+	if (c >= 450 && c <= 550) // prints out the error for low pressure 
+
+	    {
+
+	      printf("%s", low);
+
+	      write(output, low, strlen(low));
+
+	    }
+
+
+
+
+
+    
+
+	if(c >= 1450 && c < 1550)// prints out the error for high pressure
+
+	    {
+
+	      printf("%s", high);
+
+	      write(output, high, strlen(high));
+
+	    }
+
+    
+
+
+
+	  alertcount++;
+
+      }
+
+	
+
+
+
+
+
+  while(1); // should stop the program 
+
+      {
+
+       close(input);
+
+       close(output);
+
+       exit(EXIT_SUCCESS);
+
+       }
+
+
+
+
+
+}
+ 
