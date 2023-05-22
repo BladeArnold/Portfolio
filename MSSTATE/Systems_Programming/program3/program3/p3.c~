@@ -1,0 +1,266 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <signal.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include<sys/time.h>
+
+#define BUF_SIZE 1024
+//Blade Arnold
+// baa215
+// This program creates a child process and sends signals out based on the numbers that the child produces.
+
+
+
+
+
+
+static int pPid; // parent id
+int c;// count for siguser 1
+int v;// count for siguser 2
+struct itimerval end;// to stop the timer
+
+
+int myprint (const char *str) // print function referenced from class videos and notes
+{
+  int len = strlen(str);
+  int numwrite = 0;
+  numwrite = write (STDOUT_FILENO, str, len);
+  if (numwrite < 1)
+    {
+      return 0;
+    }
+  return 1;
+}
+
+int myprintint (const int num) // print function referenced from class videos and notes
+{
+  int len;
+  char buf [256];
+  sprintf(buf, "%d", num);
+  len = strlen(buf);
+  int numwrite = 0;
+  numwrite = write (STDOUT_FILENO, buf, len);
+  if (numwrite < 1)
+    {
+      return 0;
+    }
+  return 1;
+}
+
+void signalhandlerp (int sig) // signal handler for the parent referenced from class videos and notes
+{
+
+  char yorn[BUF_SIZE]; 
+  int myPid = getpid();
+  int rannum; // variable for the random number 
+
+  
+  if (sig == SIGCHLD) // sees if all the children gets terminated
+  {
+  	int p = 0, status = 0;
+  	while ((p = waitpid(-1, &status, WNOHANG)) > 0)
+  	{
+  	}
+  	if (p == -1)
+  	{
+	  if (errno == ECHILD)
+	    {
+	      myprint ("\n All my children are gone. ;(\n");
+	      exit(EXIT_SUCCESS);
+	    }
+	  perror("waitpid");
+	  exit(EXIT_FAILURE);
+  	}
+  }
+  
+  
+  
+  if (sig == SIGINT) // will exit the system
+    {
+    if (myPid != pPid)
+   	{
+   	 return; 
+    	}
+      myprint("\nExit: Yes or No? (Y/n)? ");
+      read(STDIN_FILENO, yorn, BUF_SIZE);
+      if (yorn[0] == 'Y')
+	{
+	  exit(EXIT_SUCCESS);
+	  return;
+	}
+    }
+
+  if (sig == SIGALRM) // makes the random number and starts the timer funciton. 
+    {
+ 
+      rannum = rand() % 100 + 1;
+      myprintint (rannum);
+      myprint ("\n");
+      if (rannum < 26) // sends a signal to sig user 1
+	{
+	  kill(pPid, SIGUSR1);
+
+	}
+      if (rannum > 74) // sends a signal to sig user 2
+	{
+	  kill(pPid, SIGUSR2);
+	}
+      else
+	{
+	  myprint ("Im leaving now. :)");
+	  exit(EXIT_SUCCESS);
+	}
+
+    }
+
+
+
+  if (sig == SIGUSR1) // prints out value of the c and sig user 1
+    {
+      c++;
+      printf("\nThe SIGUSR1 has been activated %d ", c);
+      myprint("\n");
+    }
+  if (sig == SIGUSR2)// prints out value of the c and sig user 2
+    {
+      v++;
+      printf("\nThe SIGUSR2 has been activated %d ", v);
+      myprint("\n");
+    }
+
+  
+}
+
+void signalhandlerc (int sig) // signal handler for the child referenced from class videos and notes
+{
+  int myPid = getpid();
+  if (sig == SIGINT) // will exit the system
+    {
+    if (myPid != pPid)
+   	{
+   	 return; 
+    	}
+    if(setitimer(ITIMER_REAL, &end, NULL) == -1) // stops the timer
+      {
+	perror("seitimer");
+	exit(EXIT_FAILURE);
+      }
+    myprint("Child is dead");
+    exit(EXIT_SUCCESS);
+    return;
+    } 
+    if (sig == SIGTERM)
+    {
+      if(pPid == -1)
+	{
+
+	  exit(EXIT_SUCCESS);
+	  myprint("Child is no more. :(");
+	}
+
+    }
+}
+
+int checkcall (int flag, const char *msg) // make sure that the system calls are good 
+{
+  if (flag == -1)
+    {
+      perror(msg);
+      exit(EXIT_FAILURE);
+    }
+    return flag;
+}
+
+
+
+int main (int argc, char *argv)
+{
+  struct sigaction sa, ca; // sigaction for the parent 
+  struct itimerval childtime; // starts the timer 
+
+  pid_t cPid; // child id
+
+
+  
+  ca.sa_handler = signalhandlerc; // child handler
+  sigemptyset(&ca.sa_mask);
+  sigaddset(&ca.sa_mask, SIGINT);
+  sigaddset(&ca.sa_mask, SIGALRM);
+  ca.sa_flags = 0;
+  
+  sa.sa_handler = signalhandlerp; // parent handler
+  sigemptyset(&sa.sa_mask);
+  sigaddset(&sa.sa_mask, SIGINT);
+  sigaddset(&sa.sa_mask, SIGALRM);
+  sa.sa_flags = 0;
+
+  childtime.it_interval.tv_sec = 15; // start of the timer
+  childtime.it_interval.tv_usec = 0;
+  childtime.it_value.tv_sec = 15;
+  childtime.it_value.tv_usec = 0;
+  
+  end.it_interval.tv_sec = 0; // end of the timer 
+  end.it_interval.tv_usec = 0;
+  end.it_value.tv_sec = 0;
+  end.it_value.tv_usec = 0;
+	
+
+  checkcall(sigaction(SIGCHLD, &sa, NULL), "sigaction for SIGCHLD"); // checks to make sure that the system calls are working
+  checkcall(sigaction(SIGINT, &sa, NULL), "sigaction for SIGINT");
+  checkcall(sigaction(SIGALRM, &sa, NULL), "sigaction for SIGALRM");
+  checkcall(sigaction(SIGUSR1, &sa, NULL), "sigaction for SIGUSR1");
+  checkcall(sigaction(SIGUSR2, &sa, NULL), "sigaction for SIGUSR2");
+  
+  
+  pPid = getpid(); // gets the parent id
+
+
+
+
+  switch (cPid = fork()) // start the processes
+    {
+    case -1:// on failure to find 
+      {
+	perror("fork");
+	exit(EXIT_FAILURE);
+      }
+    case 0:// child process
+      {
+	if (sigaction(SIGALRM, &sa, NULL) == -1)
+	  {
+	    perror("sigaction for SIGALRM");
+	    exit(EXIT_FAILURE);
+	  }
+	if(setitimer(ITIMER_REAL, &childtime, NULL) == -1)// starts the timer
+	  {
+	    perror("seitimer");
+	    exit(EXIT_FAILURE);
+	   
+	  }
+	if (sigaction(SIGTERM, &ca, NULL) == -1)
+	{
+	  perror("sigaction for SIGTERM");
+	  exit(EXIT_FAILURE);
+	}
+	while (1)
+	  {
+	    pause();
+	  }
+	break;
+      }
+    
+    default:// parent process
+      {
+	while(1)
+	  {
+	    pause();
+	  }
+      }
+    }
+}
