@@ -2,7 +2,7 @@
 // (part 3)
 // purpose: node classes used while building a parse tree for
 //              the arithmetic expression
-// version: Spring 2022
+// version: Fall 2022
 //  author: Blade Arnold
 //*****************************************************************************
 
