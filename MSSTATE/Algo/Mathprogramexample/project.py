@@ -8,49 +8,62 @@ warnings.filterwarnings('ignore')
 np.set_printoptions(suppress=True)
 
 
+import numpy as np
+
 class mcless:
     def __init__(self, threshold=0.5, learning_rate=0.01, num_epochs=100):
+        # Initialize the mcless classifier.
+
         self.threshold = threshold
         self.learning_rate = learning_rate
         self.num_epochs = num_epochs
         
     def fit(self, X, y):
+        # Fit the mcless classifier to the training data.
+
         N = X.shape[0]
-        A = np.column_stack((np.ones([N,]), X)) 
+        A = np.column_stack((np.ones([N,]), X))  # Add a column of ones to the input features
         num_classes = len(np.unique(y))
-        B = np.zeros([N,num_classes]) 
+        B = np.zeros([N, num_classes])  # Initialize the B matrix with zeros
         num_features = X.shape[1]
-        self.weights = np.zeros([num_features + 1, num_classes])
+        self.weights = np.zeros([num_features + 1, num_classes])  # Initialize weights with zeros
         
         for c in range(num_classes):
             y_c = np.zeros_like(y)
-            y_c[y == c] = 1
+            y_c[y == c] = 1  # Set elements of y_c to 1 where y equals the current class (c)
+            
             for epoch in range(self.num_epochs):
-                net_inputs = np.dot(A, self.weights[:,c])
-                activations = self.activation(net_inputs)
-                errors = y_c - activations
-                gradient = np.dot(A.T, errors)
-                self.weights[:,c] += self.learning_rate * gradient
+                net_inputs = np.dot(A, self.weights[:, c])  # Compute the dot product of A and weights
+                activations = self.activation(net_inputs)  # Apply activation function to net inputs
+                errors = y_c - activations  # Compute the error by subtracting activations from y_c
+                gradient = np.dot(A.T, errors)  # Compute the gradient using matrix multiplication
+                self.weights[:, c] += self.learning_rate * gradient  # Update weights using gradient descent
 
-        ATA = np.dot(A.T, A)
-        ATB = np.dot(A.T, B)
-        W = np.dot(np.linalg.inv(ATA), ATB)
-
+        ATA = np.dot(A.T, A)  # Compute the dot product of A transpose and A
+        ATB = np.dot(A.T, B)  # Compute the dot product of A transpose and B
+        W = np.dot(np.linalg.inv(ATA), ATB)  # Compute the weight matrix using the closed-form solution
         
     def predict(self, X):
+        # Predict class labels for the input data.
+
         N = X.shape[0]
-        Atest = np.column_stack((np.ones([N,]), X))
-        P = np.dot(Atest, self.weights)
-        self.activation(P)
-        prediction = np.argmax(P, axis=1);
+        Atest = np.column_stack((np.ones([N,]), X))  # Add a column of ones to the input features
+        P = np.dot(Atest, self.weights)  # Compute the dot product of Atest and weights
+        self.activation(P)  # Apply the activation function to P (in-place)
+        prediction = np.argmax(P, axis=1)  # Find the index of the maximum value in each row
         return prediction
     
     def score(self, X, y):
+        # Compute the mean accuracy on the given test data and labels.
+        
         y_pred = self.predict(X)
         return np.mean(y_pred == y)
     
     def activation(self, z):
+        # Apply the sigmoid activation function to the given values.
+        
         return 1 / (1 + np.exp(-z))
+
 
 
 #=====================================================================
